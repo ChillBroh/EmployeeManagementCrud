@@ -1,37 +1,103 @@
 const Employees = require("../models/employeeModal");
 
-const addEmployee = (req, res, next) => {
-  res.status(201).json({
-    status: "success",
-    message: "EMployee added",
-  });
+const addEmployee = async (req, res, next) => {
+  try {
+    const {
+      empID,
+      empName,
+      parkId,
+      position,
+      basicSalary,
+      bonus,
+      ETFcollection,
+      tax,
+      netSalary,
+    } = req.body;
+
+    const newEmployee = await new Employees({
+      empID,
+      empName,
+      parkId,
+      position,
+      basicSalary,
+      bonus,
+      ETFcollection,
+      tax,
+      netSalary,
+      createdAt: new Date(),
+    });
+    const savedEmployee = await newEmployee.save();
+    res.status(201).json({
+      status: "success",
+      message: savedEmployee,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
-const getEmployees = (req, res, next) => {
-  res.status(200).json({
-    status: "success",
-    message: "All Employess",
-  });
+const getEmployees = async (req, res, next) => {
+  try {
+    const employees = await Employees.find();
+    res.status(200).json({
+      status: "success",
+      message: employees,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
-const getEmployeeByID = (req, res, next) => {
-  res.status(200).json({
-    status: "success",
-    message: "Employes",
-  });
+const getEmployeeByID = async (req, res, next) => {
+  const { id } = req.params;
+  console.log(id);
+  try {
+    const employee = await Employees.findOne({ empID: id });
+    if (!employee) {
+      throw new Error("Employee Not found!");
+    }
+    res.status(200).json({
+      status: "success",
+      message: employee,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
-const updateEmployee = (req, res, next) => {
-  res.status(200).json({
-    status: "success",
-    message: "Employee updated",
-  });
+const updateEmployee = async (req, res, next) => {
+  const { id } = req.params;
+
+  try {
+    const employee = await Employees.findOne({ empID: id });
+    if (!employee) {
+      throw new Error("Employee Not found!");
+    }
+    const employeeUpdate = await Employees.findOneAndUpdate(
+      { empID: id },
+      { $set: req.body },
+      { new: true }
+    );
+
+    res.status(200).json({
+      status: "success",
+      message: employeeUpdate,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
-const deleteEmployee = (req, res, next) => {
-  res.status(200).json({
-    status: "success",
-    message: "Employee Deleted",
-  });
+const deleteEmployee = async (req, res, next) => {
+  const { id } = req.params;
+  try {
+    const employee = await Employees.findOneAndDelete({ empID: id });
+    if (!employee) {
+      throw new Error("Employee Not found!");
+    }
+    res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
 };
 module.exports = {
   addEmployee,

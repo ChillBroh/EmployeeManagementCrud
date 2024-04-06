@@ -5,17 +5,23 @@ const employeesSchema = new Schema({
   empID: {
     type: String,
     required: true,
+    unique: true,
   },
   empName: {
     type: String,
     required: true,
+  },
+  parkId: {
+    type: String,
+    required: true,
+    unique: true,
   },
   position: {
     type: String,
     required: true,
   },
   basicSalary: {
-    type: numbver,
+    type: Number,
     required: true,
   },
   bonus: {
@@ -44,5 +50,5 @@ const employeesSchema = new Schema({
   },
 });
 
-const Employees = mongoose.Model("Employees", employeesSchema);
+const Employees = mongoose.model("Employees", employeesSchema);
 module.exports = Employees;
